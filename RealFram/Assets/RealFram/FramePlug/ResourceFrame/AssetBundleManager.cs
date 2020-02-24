@@ -82,7 +82,7 @@ public class AssetBundleManager : Singleton<AssetBundleManager>
             return item;
         }
 
-        if (item.m_AssetBundle != null)
+        if (item.m_AssetBundle != null) //item已加载m_AssetBundle
         {
             return item;
         }
@@ -101,14 +101,14 @@ public class AssetBundleManager : Singleton<AssetBundleManager>
     }
 
     /// <summary>
-    /// 加载单个assetbundle根据名字
+    /// 根据名字加载单个assetbundle
     /// </summary>
     /// <param name="name"></param>
     /// <returns></returns>
     private AssetBundle LoadAssetBundle(string name)
     {
         AssetBundleItem item = null;
-        uint crc = Crc32.GetCrc32(name);
+        uint crc = Crc32.GetCrc32(name); 
 
         if (!m_AssetBundleItemDic.TryGetValue(crc, out item))
         {
@@ -144,6 +144,7 @@ public class AssetBundleManager : Singleton<AssetBundleManager>
             return;
         }
 
+        //卸载依赖项
         if (item.m_DependAssetBundle != null && item.m_DependAssetBundle.Count > 0)
         {
             for (int i = 0; i < item.m_DependAssetBundle.Count; i++)
@@ -151,6 +152,8 @@ public class AssetBundleManager : Singleton<AssetBundleManager>
                 UnLoadAssetBundle(item.m_DependAssetBundle[i]);
             }
         }
+
+        //卸载自己
         UnLoadAssetBundle(item.m_ABName);
     }
 
@@ -184,6 +187,9 @@ public class AssetBundleManager : Singleton<AssetBundleManager>
     }
 }
 
+/// <summary>
+/// 内部保存 AssetBundle，以及引用计数:当前被其他AssetBundle所引用的AssetBundle个数
+/// </summary>
 public class AssetBundleItem
 {
     public AssetBundle assetBundle = null;
@@ -196,6 +202,9 @@ public class AssetBundleItem
     }
 }
 
+/// <summary>
+/// 中间类，包含Assetbundle的信息AssetBundleInfo,同时包含资源对象以及其使用情况
+/// </summary>
 public class ResouceItem
 {
     //资源路径的CRC

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
+/// <summary>
+/// 应该称为GameobjectManager，管理需要在场景中显示，实例化的物体，内部包含Gameobject对象池
+/// </summary>
 public class ObjectManager : Singleton<ObjectManager>
 {
     //对象池节点

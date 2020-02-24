@@ -182,7 +182,7 @@ public class BundleEditor
                 string abName = "";
                 if (resPathDic.TryGetValue(tempPath, out abName))
                 {
-                    if (abName == resPathDic[path])
+                    if (abName == resPathDic[path]) //abName包含依赖项tempPath
                         continue;
 
                     if (!abBase.ABDependce.Contains(abName))

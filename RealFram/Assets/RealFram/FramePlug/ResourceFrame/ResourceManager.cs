@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -10,6 +11,9 @@ public enum LoadResPriority
     RES_NUM,
 }
 
+/// <summary>
+/// ResouceGameObject
+/// </summary>
 public class ResouceObj
 {
     //路径对应CRC
@@ -54,7 +58,12 @@ public class AsyncLoadResParam
     public List<AsyncCallBack> m_CallBackList = new List<AsyncCallBack>();
     public uint m_Crc;
     public string m_Path;
-    public bool m_Sprite = false;
+    /// <summary>
+    /// Sprite加載必须要泛型加载
+    /// item.m_AssetBundle.LoadAssetAsync(item.m_AssetName);  (x)
+    /// item.m_AssetBundle.LoadAssetAsync<Sprite>(item.m_AssetName);  (v)
+    /// </summary>
+    public bool m_Sprite = false; 
     public LoadResPriority m_Priority = LoadResPriority.RES_SLOW;
 
     public void Reset()
@@ -113,7 +122,7 @@ public class ResourceManager : Singleton<ResourceManager>
     protected MonoBehaviour m_Startmono;
     //正在异步加载的资源列表
     protected List<AsyncLoadResParam>[] m_LoadingAssetList = new List<AsyncLoadResParam>[(int)LoadResPriority.RES_NUM];
-    //正在异步加载的Dic
+    //正在异步加载资源参数的Dic
     protected Dictionary<uint, AsyncLoadResParam> m_LoadingAssetDic = new Dictionary<uint, AsyncLoadResParam>();
 
     //最长连续卡着加载资源的时间，单位微妙
@@ -155,10 +164,11 @@ public class ResourceManager : Singleton<ResourceManager>
             }
         }
 
-        foreach (ResouceItem item in tempList)
+        for (int i = 0; i < tempList.Count; i++)
         {
-            DestoryResouceItme(item, true);
+            DestoryResouceItme(tempList[i], true);
         }
+       
         tempList.Clear();
     }
 
@@ -616,7 +626,8 @@ public class ResourceManager : Singleton<ResourceManager>
         if (item.m_Obj != null)
         {
             item.m_Obj = null;
-#if UNITY_EDITOR
+#if UNITY_EDITOR 
+            //编辑器加载的东西UnityEditor.AssetDatabase.LoadAssetAtPath<T>(path) 如果没有调用以下函数卸载，将会一直被编辑器引用而不被卸载
             Resources.UnloadUnusedAssets();
 #endif
         }
@@ -732,7 +743,7 @@ public class ResourceManager : Singleton<ResourceManager>
     }
 
     /// <summary>
-    /// 异步加载
+    /// 启动异步加载协程
     /// </summary>
     /// <returns></returns>
     IEnumerator AsyncLoadCor()
@@ -870,7 +881,11 @@ public class DoubleLinkedListNode<T> where T : class, new()
     public T t = null;
 }
 
-//双向链表结构
+/// <summary>
+/// 双向链表结构  里面包含某一类型的DoubleLinkedListNode<T>
+/// 由于对象池的使用习惯，频繁使用的DoubleLinkedListNode<T>，我们希望放在顶部，不常用的自然应该被沉到底部
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public class DoubleLinedList<T> where T : class, new()
 {
     //表头
@@ -893,11 +908,11 @@ public class DoubleLinedList<T> where T : class, new()
     /// <returns></returns>
     public DoubleLinkedListNode<T> AddToHeader(T t)
     {
-        DoubleLinkedListNode<T> pList = m_DoubleLinkNodePool.Spawn(true);
-        pList.next = null;
-        pList.prev = null;
-        pList.t = t;
-        return AddToHeader(pList);
+        DoubleLinkedListNode<T> pNode = m_DoubleLinkNodePool.Spawn(true);
+        pNode.next = null;
+        pNode.prev = null;
+        pNode.t = t;
+        return AddToHeader(pNode);
     }
 
     /// <summary>
@@ -965,7 +980,7 @@ public class DoubleLinedList<T> where T : class, new()
     }
 
     /// <summary>
-    /// 移除某个节点
+    /// 移除某个节点 时间复杂度O(1)
     /// </summary>
     /// <param name="pNode"></param>
     public void RemoveNode(DoubleLinkedListNode<T> pNode)
@@ -1000,7 +1015,7 @@ public class DoubleLinedList<T> where T : class, new()
         if (pNode == null || pNode == Head)
             return;
 
-        if (pNode.prev == null && pNode.next == null)
+        if (pNode.prev == null && pNode.next == null)//被回收的节点
             return;
 
         if (pNode == Tail)
@@ -1023,6 +1038,11 @@ public class DoubleLinedList<T> where T : class, new()
     }
 }
 
+/// <summary>
+/// 双向链表使用类，管理类，本质是对DoubleLinedList<T>的封装；把某一类型为T的DoubleLinedList<T>，常用的Node放在头部，释放尾部不常用的Node
+/// ----实用性角度，这个类的设计有问题？？？--- 疑问：对于一个DoubleLinedList<T>，把常用的移到头部，不常用移到尾部有啥用？
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public class CMapList<T> where T : class, new()
 {
     DoubleLinedList<T> m_DLink = new DoubleLinedList<T>();
@@ -1105,7 +1125,7 @@ public class CMapList<T> where T : class, new()
     }
 
     /// <summary>
-    /// 查找是否存在该节点
+    /// 查找是否存在该节点，O(1)
     /// </summary>
     /// <param name="t"></param>
     /// <returns></returns>

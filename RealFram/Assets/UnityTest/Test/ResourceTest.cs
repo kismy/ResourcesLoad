@@ -6,8 +6,7 @@ using System.Xml.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
 
 public class ResourceTest : MonoBehaviour
-{
-    // Use this for initialization
+{ 
     void Start()
     {
         //AssetBundle assetBundle = AssetBundle.LoadFromFile(Application.streamingAssetsPath + "/attack");
@@ -20,29 +19,31 @@ public class ResourceTest : MonoBehaviour
 
     void TestLoadAB()
     {
-        //AssetBundle configAB = AssetBundle.LoadFromFile (Application.streamingAssetsPath + "/assetbundleconfig");
-        //TextAsset textAsset = configAB.LoadAsset<TextAsset>("AssetBundleConfig");
-        //MemoryStream stream = new MemoryStream(textAsset.bytes);
-        //BinaryFormatter bf = new BinaryFormatter();
-        //AssetBundleConfig testSerilize = (AssetBundleConfig)bf.Deserialize(stream);
-        //stream.Close();
-        //string path = "Assets/GameData/Prefabs/Attack.prefab";
-        //uint crc = Crc32.GetCrc32(path);
-        //ABBase abBase = null;
-        //for (int i = 0; i < testSerilize.ABList.Count; i++)
-        //{
-        //    if (testSerilize.ABList[i].Crc == crc)
-        //    {
-        //        abBase = testSerilize.ABList[i];
-        //    }
-        //}
+        /*
+        AssetBundle configAB = AssetBundle.LoadFromFile(Application.streamingAssetsPath+ "/assetbundleconfig");
+        TextAsset textAsset = configAB.LoadAsset<TextAsset>("AssetBundleConfig");
+        MemoryStream stream = new MemoryStream(textAsset.bytes);
+        BinaryFormatter bf = new BinaryFormatter();
+        AssetBundleConfig testSerilize = (AssetBundleConfig)bf.Deserialize(stream);
+        stream.Close();
+        string path = "Assets/GameData/Prefabs/Attack.prefab";
+        uint crc = Crc32.GetCrc32(path);
+        ABBase abBase = null;
+        for (int i = 0; i < testSerilize.ABList.Count; i++)
+        {
+            if (testSerilize.ABList[i].Crc == crc)
+            {
+                abBase = testSerilize.ABList[i];
+            }
+        }
 
-        //for (int i = 0; i < abBase.ABDependce.Count; i++)
-        //{
-        //    AssetBundle.LoadFromFile(Application.streamingAssetsPath + "/" + abBase.ABDependce[i]);
-        //}
-        //AssetBundle assetBundle = AssetBundle.LoadFromFile(Application.streamingAssetsPath + "/" + abBase.ABName);
-        //GameObject obj = GameObject.Instantiate(assetBundle.LoadAsset<GameObject>(abBase.AssetName));
+        for (int i = 0; i < abBase.ABDependce.Count; i++)
+        {
+            AssetBundle.LoadFromFile(Application.streamingAssetsPath + "/" + abBase.ABDependce[i]);
+        }
+        AssetBundle assetBundle = AssetBundle.LoadFromFile(Application.streamingAssetsPath + "/" + abBase.ABName);
+        GameObject obj = GameObject.Instantiate(assetBundle.LoadAsset<GameObject>(abBase.AssetName));
+    */
     }
 
     void ReadTestAssets()
